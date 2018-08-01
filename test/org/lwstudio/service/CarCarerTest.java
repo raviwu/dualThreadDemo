@@ -1,6 +1,5 @@
 package org.lwstudio.service;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.*;
 
 import org.lwstudio.entity.Car;
@@ -18,10 +17,10 @@ class CarCarerTest {
     private PrintStream originalSystemOut;
     private ByteArrayOutputStream systemOutContent;
 
-    private final ExecutorService service = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newScheduledThreadPool(2);
 
     private final Car car = new Car();
-    private final CarCarer washer = new CarCarer("Washing", car, CarStatus.WASHED, CarStatus.WAXED, CarStatus.CLEANED);
+    private final CarCarer washer = new CarCarer("Washing", car, CarStatus.WASHED, CarStatus.CLEANED);
 
     @BeforeEach
     void redirectSystemOutStream() {
@@ -58,7 +57,7 @@ class CarCarerTest {
 
     @Test
     public void testWaitForBeforeActionStatuses() {
-        car.setStatus(CarStatus.WASHED);
+        car.setStatus(CarStatus.WAXED);
 
         startThread(washer);
 
@@ -70,8 +69,33 @@ class CarCarerTest {
     }
 
     @Test
+    public void testAllCarerWaitForCarStatus() throws InterruptedException {
+        car.setStatus(CarStatus.WAXED);
+
+        CarCarer cleaner = new CarCarer("Cleaning", car, CarStatus.CLEANED, CarStatus.WASHED);
+
+        startThread(washer, cleaner);
+        endThreadAfterMilliseconds(3000, washer, cleaner);
+
+        assertEquals(0, consoleOutput().length());
+    }
+
+    @Test
+    public void testCarCarerAcceptsManyCarStatuses() throws InterruptedException {
+        car.setStatus(CarStatus.WAXED);
+
+        CarCarer randomCarer = new CarCarer("Testing", car, CarStatus.CLEANED, CarStatus.WASHED, CarStatus.WAXED);
+
+        startThread(randomCarer);
+        endThreadAfterMilliseconds(500, randomCarer);
+
+        assert(consoleOutput().contains("Testing"));
+    }
+
+    @Test
     public void testUpdateStatusAfterProcess() {
         car.setStatus(CarStatus.CLEANED);
+
         startThread(washer);
 
         assert(consoleOutput().contains("Washing"));
@@ -81,15 +105,36 @@ class CarCarerTest {
         assertEquals(CarStatus.WASHED, car.getStatus());
     }
 
-    private void startThread(CarCarer carCarer) {
-        service.execute(carCarer);
+    @Test
+    public void testDualThreadWaitAndNotifyEachOther() throws InterruptedException {
+        car.setStatus(CarStatus.CLEANED);
+
+        CarCarer cleaner = new CarCarer("Cleaning", car, CarStatus.CLEANED, CarStatus.WASHED);
+
+        startThread(washer, cleaner);
+        endThreadAfterMilliseconds(3000, washer, cleaner);
+
+        assert(consoleOutput().contains(
+                "Cleaning   start .... finish!\n" +
+                        "Washing    start .... finish!\n" +
+                        "Cleaning   start .... finish!\n" +
+                        "Washing    start .... finish!"
+        ));
     }
 
-    private void endThreadAfterMilliseconds(int milliseconds, CarCarer carCarer) {
+    private void startThread(CarCarer... carCarers) {
+        for(CarCarer carCarer : carCarers) {
+            executor.submit(carCarer);
+        }
+    }
+
+    private void endThreadAfterMilliseconds(int milliseconds, CarCarer... carCarers) {
         try {
-            service.awaitTermination(milliseconds, TimeUnit.MILLISECONDS);
-            carCarer.terminate();
-            service.shutdownNow();
+            executor.awaitTermination(milliseconds, TimeUnit.MILLISECONDS);
+            for(CarCarer carCarer : carCarers) {
+                carCarer.terminate();
+            }
+            executor.shutdownNow();
         } catch (InterruptedException e) {
             // ignore
         }
