@@ -10,13 +10,12 @@ import java.util.List;
 public class CarCarer implements Runnable {
     private boolean isRunning = true;
     private String action;
-    private final int actionIntervalMilliseconds = 500;
+    private final int actionIntervalMilliseconds = 100;
 
     private final Car car;
 
     private List<CarStatus> beforeActionStatuses = new ArrayList<>();
     private CarStatus afterActionStatus;
-
 
     public CarCarer(String action, Car car, CarStatus afterActionStatus, CarStatus... beforeActionStatuses) {
         this.action = action;
@@ -32,8 +31,8 @@ public class CarCarer implements Runnable {
     @Override
     public void run() {
         try {
-            synchronized (car) {
-                while (isRunning) {
+            while (isRunning) {
+                synchronized (car) {
                     if (beforeActionStatuses.contains(car.getStatus())) {
                         actionProcessing();
                         car.setStatus(afterActionStatus);
