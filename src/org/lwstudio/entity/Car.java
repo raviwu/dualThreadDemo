@@ -1,16 +1,15 @@
-package org.lwstudio;
+package org.lwstudio.entity;
 
 public class Car {
-    private enum Status { CANWASH, CANWAX }
-    public Status status = Status.CANWASH;
+    public CarStatus status = CarStatus.CANWASH;
 
     synchronized public void getWashed() throws InterruptedException {
         while (true) {
-            if (status != Status.CANWASH) {
+            if (status != CarStatus.CANWASH) {
                 wait();
             } else {
                 processing("Washing");
-                status = Status.CANWAX;
+                status = CarStatus.CANWAX;
                 notifyAll();
             }
         }
@@ -18,11 +17,11 @@ public class Car {
 
     synchronized public void getWaxed() throws InterruptedException {
         while (true) {
-            if (status != Status.CANWAX) {
+            if (status != CarStatus.CANWAX) {
                 wait();
             } else {
                 processing("Waxing");
-                status = Status.CANWASH;
+                status = CarStatus.CANWASH;
                 notifyAll();
             }
         }

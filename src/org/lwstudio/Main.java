@@ -1,5 +1,7 @@
 package org.lwstudio;
 
+import org.lwstudio.entity.Car;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
