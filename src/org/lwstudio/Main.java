@@ -17,7 +17,7 @@ public class Main {
     private static List<CarCarer> TASKS = new ArrayList<>();
 
     static {
-        TASKS.add(new CarCarer("Cleaning", CAR, CarStatus.CLEANED, CarStatus.WASHED, CarStatus.WAXED));
+        // TASKS.add(new CarCarer("Cleaning", CAR, CarStatus.CLEANED, CarStatus.WASHED, CarStatus.WAXED));
         TASKS.add(new CarCarer("Washing", CAR, CarStatus.WASHED, CarStatus.WAXED, CarStatus.CLEANED));
         TASKS.add(new CarCarer("Waxing", CAR, CarStatus.WAXED, CarStatus.WASHED, CarStatus.CLEANED));
 
