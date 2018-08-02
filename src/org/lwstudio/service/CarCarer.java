@@ -8,9 +8,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class CarCarer implements Runnable {
+    private final static int ACTION_INTERVAL_MILLISECONDS = 100;
+    private final static int ACTION_INTERVAL_COUNT = 5;
     private boolean isRunning = true;
     private String action;
-    private final int actionIntervalMilliseconds = 100;
 
     private final Car car;
 
@@ -50,12 +51,12 @@ public class CarCarer implements Runnable {
     private void actionProcessing() throws InterruptedException {
         System.out.print(String.format("%1$-10s start ", action));
 
-        for (int i = 0; i < 4; i++)  {
-            Thread.sleep(actionIntervalMilliseconds);
+        for (int i = 0; i < CarCarer.ACTION_INTERVAL_COUNT; i++)  {
+            Thread.sleep(CarCarer.ACTION_INTERVAL_MILLISECONDS);
             System.out.print(".");
         }
 
-        Thread.sleep(actionIntervalMilliseconds);
+        Thread.sleep(CarCarer.ACTION_INTERVAL_MILLISECONDS);
         System.out.println(" finish!");
     }
 }

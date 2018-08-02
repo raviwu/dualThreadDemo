@@ -11,7 +11,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
-    private final static int programExecutionPeriodSeconds = 10;
+    private final static int PROGRAM_EXECUTION_SECONDS = 5;
+    private final static String PROGRAM_EXECUTION_COMPLETE_NOTICE = "=== Program Finished ==";
     private final static Car CAR = new Car();
     private static ExecutorService EXECUTOR;
     private static List<CarCarer> TASKS = new ArrayList<>();
@@ -27,11 +28,11 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         TASKS.forEach((task) -> EXECUTOR.submit(task));
 
-        EXECUTOR.awaitTermination(programExecutionPeriodSeconds, TimeUnit.SECONDS);
+        EXECUTOR.awaitTermination(PROGRAM_EXECUTION_SECONDS, TimeUnit.SECONDS);
 
         TASKS.forEach(CarCarer::terminate);
         EXECUTOR.shutdown();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> System.out.println("=== Program Finished ==")));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> System.out.println(PROGRAM_EXECUTION_COMPLETE_NOTICE)));
     }
 }
