@@ -22,7 +22,7 @@ public class Main {
         TASKS.add(new CarCarer("Washing", CAR, CarStatus.WASHED, CarStatus.WAXED, CarStatus.CLEANED));
         TASKS.add(new CarCarer("Waxing", CAR, CarStatus.WAXED, CarStatus.WASHED, CarStatus.CLEANED));
 
-        EXECUTOR = Executors.newScheduledThreadPool(TASKS.size());
+        EXECUTOR = Executors.newFixedThreadPool(TASKS.size());
     }
 
     public static void main(String[] args) throws InterruptedException {

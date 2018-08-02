@@ -99,9 +99,9 @@ class CarCarerTest {
 
         startThread(washer);
 
-        assert(consoleOutput().contains("Washing"));
-
         endThreadAfterMilliseconds(1000, washer);
+
+        assert(consoleOutput().contains("Washing"));
 
         assertEquals(CarStatus.WASHED, car.getStatus());
     }

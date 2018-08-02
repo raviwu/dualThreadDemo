@@ -45,12 +45,12 @@ public class CarCarer implements Runnable {
                 }
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
     private void actionProcessing() {
-        System.out.print(String.format("%1$-10s start ", action));
+        System.out.printf("%1$-10s start ", action);
 
         Stream.iterate(CarCarer.ACTION_INTERVAL_MILLISECONDS, i  ->  i)
                 .limit(CarCarer.ACTION_INTERVAL_COUNT).forEach(CarCarer::actionProcessingEffect);
@@ -63,7 +63,7 @@ public class CarCarer implements Runnable {
             Thread.sleep(sleepInterval);
             System.out.print(".");
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 }
