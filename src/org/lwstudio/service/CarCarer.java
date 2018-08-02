@@ -53,12 +53,12 @@ public class CarCarer implements Runnable {
         System.out.print(String.format("%1$-10s start ", action));
 
         Stream.iterate(CarCarer.ACTION_INTERVAL_MILLISECONDS, i  ->  i)
-                .limit(CarCarer.ACTION_INTERVAL_COUNT).forEach(CarCarer::processing);
+                .limit(CarCarer.ACTION_INTERVAL_COUNT).forEach(CarCarer::actionProcessingEffect);
 
         System.out.println(" finish!");
     }
 
-    private static void processing(int sleepInterval) {
+    private static void actionProcessingEffect(int sleepInterval) {
         try {
             Thread.sleep(sleepInterval);
             System.out.print(".");
