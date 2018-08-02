@@ -6,6 +6,7 @@ import org.lwstudio.entity.CarStatus;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class CarCarer implements Runnable {
     private final static int ACTION_INTERVAL_MILLISECONDS = 100;
@@ -48,15 +49,21 @@ public class CarCarer implements Runnable {
         }
     }
 
-    private void actionProcessing() throws InterruptedException {
+    private void actionProcessing() {
         System.out.print(String.format("%1$-10s start ", action));
 
-        for (int i = 0; i < CarCarer.ACTION_INTERVAL_COUNT; i++)  {
-            Thread.sleep(CarCarer.ACTION_INTERVAL_MILLISECONDS);
-            System.out.print(".");
-        }
+        Stream.iterate(CarCarer.ACTION_INTERVAL_MILLISECONDS, i  ->  i)
+                .limit(CarCarer.ACTION_INTERVAL_COUNT).forEach(CarCarer::processing);
 
-        Thread.sleep(CarCarer.ACTION_INTERVAL_MILLISECONDS);
         System.out.println(" finish!");
+    }
+
+    private static void processing(int sleepInterval) {
+        try {
+            Thread.sleep(sleepInterval);
+            System.out.print(".");
+        } catch (InterruptedException e) {
+            // ignore
+        }
     }
 }
