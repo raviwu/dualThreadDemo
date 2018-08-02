@@ -45,7 +45,7 @@ public class CarCarer implements Runnable {
                 }
             }
         } catch (InterruptedException e) {
-            // ignore
+            e.printStackTrace();
         }
     }
 
@@ -63,7 +63,7 @@ public class CarCarer implements Runnable {
             Thread.sleep(sleepInterval);
             System.out.print(".");
         } catch (InterruptedException e) {
-            // ignore
+            e.printStackTrace();
         }
     }
 }
