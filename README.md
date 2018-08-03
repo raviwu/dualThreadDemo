@@ -1,3 +1,7 @@
+![alt text](https://travis-ci.org/raviwu/dualThreadDemo.svg?branch=master)
+
+---
+
 ## Dual Thread Example in Java
 
 A quick DEMO for Java's Thread API:
