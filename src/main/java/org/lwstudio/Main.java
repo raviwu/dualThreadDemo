@@ -5,6 +5,7 @@ import org.lwstudio.entity.Car;
 import org.lwstudio.entity.CarStatus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,9 +19,9 @@ public class Main {
     private static List<CarCarer> TASKS = new ArrayList<>();
 
     static {
-        // TASKS.add(new CarCarer("Cleaning", CAR, CarStatus.CLEANED, CarStatus.WASHED, CarStatus.WAXED));
-        TASKS.add(new CarCarer("Washing", CAR, CarStatus.WASHED, CarStatus.WAXED, CarStatus.CLEANED));
-        TASKS.add(new CarCarer("Waxing", CAR, CarStatus.WAXED, CarStatus.WASHED, CarStatus.CLEANED));
+        // TASKS.add(new CarCarer("Cleaning", CAR, Arrays.asList(CarStatus.WASHED, CarStatus.WAXED), CarStatus.CLEANED));
+        TASKS.add(new CarCarer("Washing", CAR, Arrays.asList(CarStatus.WAXED, CarStatus.CLEANED), CarStatus.WASHED));
+        TASKS.add(new CarCarer("Waxing", CAR, Arrays.asList(CarStatus.WASHED, CarStatus.CLEANED), CarStatus.WAXED));
 
         EXECUTOR = Executors.newFixedThreadPool(TASKS.size());
     }

@@ -8,6 +8,7 @@ import org.lwstudio.entity.CarStatus;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +22,7 @@ class CarCarerTest {
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
     private final Car car = new Car();
-    private final CarCarer washer = new CarCarer("Washing", car, CarStatus.WASHED, CarStatus.CLEANED);
+    private final CarCarer washer = new CarCarer("Washing", car, Arrays.asList(CarStatus.CLEANED), CarStatus.WASHED);
 
     @BeforeEach
     void redirectSystemOutStream() {
@@ -79,7 +80,7 @@ class CarCarerTest {
     public void testAllCarerWaitForCarStatus() {
         car.setStatus(CarStatus.WAXED);
 
-        CarCarer cleaner = new CarCarer("Cleaning", car, CarStatus.CLEANED, CarStatus.WASHED);
+        CarCarer cleaner = new CarCarer("Cleaning", car, Arrays.asList(CarStatus.WASHED), CarStatus.CLEANED);
 
         startThread(washer, cleaner);
         endThreadAfterMilliseconds(100, washer, cleaner);
@@ -91,7 +92,7 @@ class CarCarerTest {
     public void testCarCarerAcceptsManyCarStatuses() throws InterruptedException {
         car.setStatus(CarStatus.WAXED);
 
-        CarCarer randomCarer = new CarCarer("Testing", car, CarStatus.CLEANED, CarStatus.WASHED, CarStatus.WAXED);
+        CarCarer randomCarer = new CarCarer("Testing", car, Arrays.asList(CarStatus.WASHED, CarStatus.WAXED), CarStatus.CLEANED);
 
         startThread(randomCarer);
         endThreadAfterMilliseconds(100, randomCarer);

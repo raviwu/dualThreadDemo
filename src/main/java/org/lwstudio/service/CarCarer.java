@@ -3,8 +3,6 @@ package org.lwstudio.service;
 import org.lwstudio.entity.Car;
 import org.lwstudio.entity.CarStatus;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -17,13 +15,13 @@ public class CarCarer implements Runnable {
 
     private final Car car;
 
-    private List<CarStatus> beforeActionStatuses = new ArrayList<>();
+    private List<CarStatus> beforeActionStatuses;
     private CarStatus afterActionStatus;
 
-    public CarCarer(String action, Car car, CarStatus afterActionStatus, CarStatus... beforeActionStatuses) {
+    public CarCarer(String action, Car car, List<CarStatus> beforeActionStatuses, CarStatus afterActionStatus) {
         this.action = action;
         this.car = car;
-        Collections.addAll(this.beforeActionStatuses, beforeActionStatuses);
+        this.beforeActionStatuses = beforeActionStatuses;
         this.afterActionStatus = afterActionStatus;
     }
 

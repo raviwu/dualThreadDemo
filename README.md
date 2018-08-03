@@ -9,6 +9,11 @@ A quick DEMO for Java's Thread API:
 1. Using `Executors` for the Thread control.
 2. Create two process that must wait until each other's action was done
 
+```shell
+mvn exec:java
+mvn test
+```
+
 ## Expected Output of Execution
 
 The `CarCarer` should wait until the `CarStatus` is able to do the assign action.
