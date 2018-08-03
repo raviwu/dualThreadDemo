@@ -18,7 +18,7 @@ class CarCarerTest {
     private PrintStream originalSystemOut;
     private ByteArrayOutputStream systemOutContent;
 
-    private final ExecutorService executor = Executors.newScheduledThreadPool(2);
+    private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
     private final Car car = new Car();
     private final CarCarer washer = new CarCarer("Washing", car, CarStatus.WASHED, CarStatus.CLEANED);
@@ -29,11 +29,15 @@ class CarCarerTest {
 
         systemOutContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(systemOutContent));
+
+        cleanupOutput();
     }
 
     @AfterEach
     void restoreSystemOutStream() {
         System.setOut(originalSystemOut);
+
+        cleanupOutput();
     }
 
     @Test
@@ -44,41 +48,43 @@ class CarCarerTest {
 
         String initialOutput = consoleOutput();
 
-        Thread.sleep(200);
+        TimeUnit.MILLISECONDS.sleep(100);
 
         assert(consoleOutput().length() > initialOutput.length());
 
-        endThreadAfterMilliseconds(500, washer);
+        endThreadAfterMilliseconds(200, washer);
 
         String finalOutput = consoleOutput();
-        Thread.sleep(200);
+        TimeUnit.MILLISECONDS.sleep(100);
 
         assertEquals(finalOutput, consoleOutput());
     }
 
     @Test
-    public void testWaitForBeforeActionStatuses() {
+    public void testWaitForBeforeActionStatuses() throws InterruptedException {
         car.setStatus(CarStatus.WAXED);
+
+        assertNoOutput();
 
         startThread(washer);
 
-        assertEquals(0, consoleOutput().length());
+        assertNoOutput();
 
-        endThreadAfterMilliseconds(200, washer);
+        endThreadAfterMilliseconds(1000, washer);
 
-        assertEquals(0, consoleOutput().length());
+        assertNoOutput();
     }
 
     @Test
-    public void testAllCarerWaitForCarStatus() throws InterruptedException {
+    public void testAllCarerWaitForCarStatus() {
         car.setStatus(CarStatus.WAXED);
 
         CarCarer cleaner = new CarCarer("Cleaning", car, CarStatus.CLEANED, CarStatus.WASHED);
 
         startThread(washer, cleaner);
-        endThreadAfterMilliseconds(3000, washer, cleaner);
+        endThreadAfterMilliseconds(100, washer, cleaner);
 
-        assertEquals(0, consoleOutput().length());
+        assertNoOutput();
     }
 
     @Test
@@ -88,9 +94,9 @@ class CarCarerTest {
         CarCarer randomCarer = new CarCarer("Testing", car, CarStatus.CLEANED, CarStatus.WASHED, CarStatus.WAXED);
 
         startThread(randomCarer);
-        endThreadAfterMilliseconds(500, randomCarer);
+        endThreadAfterMilliseconds(100, randomCarer);
 
-        assert(consoleOutput().contains("Testing"));
+        assertEquals(true, consoleOutput().contains("Testing"));
     }
 
     @Test
@@ -99,28 +105,15 @@ class CarCarerTest {
 
         startThread(washer);
 
-        endThreadAfterMilliseconds(1000, washer);
+        endThreadAfterMilliseconds(100, washer);
 
-        assert(consoleOutput().contains("Washing"));
+        assertEquals(true, consoleOutput().contains("Washing"));
 
         assertEquals(CarStatus.WASHED, car.getStatus());
     }
 
-    @Test
-    public void testDualThreadWaitAndNotifyEachOther() throws InterruptedException {
-        car.setStatus(CarStatus.CLEANED);
-
-        CarCarer cleaner = new CarCarer("Cleaning", car, CarStatus.CLEANED, CarStatus.WASHED);
-
-        startThread(washer, cleaner);
-        endThreadAfterMilliseconds(3000, washer, cleaner);
-
-        assert(consoleOutput().contains(
-                "Cleaning   start .... finish!\n" +
-                        "Washing    start .... finish!\n" +
-                        "Cleaning   start .... finish!\n" +
-                        "Washing    start .... finish!"
-        ));
+    private void assertNoOutput() {
+        assertEquals("", consoleOutput());
     }
 
     private void startThread(CarCarer... carCarers) {
@@ -139,6 +132,10 @@ class CarCarerTest {
         } catch (InterruptedException e) {
             // ignore
         }
+    }
+
+    private void cleanupOutput() {
+        systemOutContent.reset();
     }
 
     private String consoleOutput() {
